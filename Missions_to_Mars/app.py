@@ -12,21 +12,15 @@ mongo = PyMongo(app)
 @app.route("/")
 def index():
     mars_data = mongo.db.marsData.find_one()
-    print(mars_data)
-    return render_template("index_home.html", mars=mars_data)
+    return render_template("./index.html", mars=mars_data)
 
 # Route that will trigger the scrape function    
 @app.route("/scrape")
 def scrape():
-
     marsTable = mongo.db.marsData
-
     mongo.db.marsData.drop()
-
     mars_data = mars_scrape.scrape_all()
-
     marsTable.insert_one(mars_data)
-
     return redirect("/")
 
 # # Given Already
