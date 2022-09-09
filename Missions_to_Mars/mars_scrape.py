@@ -1,137 +1,123 @@
 from splinter import Browser
-import requests
-from bs4 import BeautifulSoup as bs
-from pprint import pprint
+from bs4 import BeautifulSoup as soup
 import pandas as pd
-# import time
+from webdriver_manager.chrome import ChromeDriverManager
+import datetime as dt
 
-# Activity 10 - scrape_coast.py
 
-def init_browser():
-    executable_path = {"executable_path" : "/Users/MPatxot/.wdm/drivers/chromedriver/78.0.3904.97/mac64/chromedriver"}
-    return Browser("chrome", **executable_path, headless=False)
+def scrape_all():
+    executable_path = {"executable_path" : ChromeDriverManager().install()}
+    browser = Browser("chrome", **executable_path, headless=False)
 
-mars_web = {}
-hemisphere_image_urls = []
+    news_title, news_paragraph = scrape_news(browser)
 
-def scrape_news():
+    MarsData = {
+        "newsTitle" : news_title, 
+        "newsParagraph" : news_paragraph,
+        "featuredImage" : scrape_featured_image(browser), 
+        "facts" : scrape_facts_page(browser), 
+        "hemisphares" : scrape_hemisphares(browser),
+        "lastUpdated" : dt.datetime.now()
+    }
+
+    browser.quit()
+
+    #display output 
+    return MarsData
+
+def scrape_news(browser):
     
-    browser = init_browser()
-
-    url = 'https://mars.nasa.gov/news/?page=0&per_page=40&order=publish_date+desc%2Ccreated_at+desc&search=&category=19%2C165%2C184%2C204&blank_scope=Latest'
+    url = 'https://redplanetscience.com/'
     browser.visit(url)
+
+    browser.is_element_present_by_css('div.list_text', wait_time=1)
+
+    html=browser.html
+    news_soup = soup(html, 'html.parser')
+
+    slide_elem = news_soup.select_one('div.list_text')
+    # Get the news title
+    news_title = slide_elem.find('div', class_='content_title').get_text()
+
+    # Get the paragraph text
+    news_p = slide_elem.find('div', class_='article_teaser_body').get_text()
+
+    return news_title, news_p
+
+
+
+#scrape through the feature image     
+def scrape_featured_image(browser):   
+
+    # Visit the URL for the Featured Space Image 
+    url = 'https://spaceimages-mars.com'
+    browser.visit(url)
+
+    full_image_link = browser.find_by_tag('button')[1]
+    full_image_link.click()
+
+    # Parse the resulting html with soup
     html = browser.html
+    img_soup = soup (html,'html.parser')
 
-    soup = bs(html, 'html.parser')
-    latest_news_date = (soup.find_all('div', class_="list_date"))[0].get_text()
-    latest_news_title = (soup.find_all('div', class_='content_title'))[0].get_text()
-    latest_news_paragraph = (soup.find_all('div', class_='article_teaser_body'))[0].get_text()
+    # Find the featured image url
+    img_url_rel = img_soup.find('img', class_='fancybox-image').get('src')
+
+    # Assign the URL for featured_image_url.
+    image_url = f'https://spaceimages-mars.com/{img_url_rel}'
+
+    return image_url
+
+#scrape through the facts page     
+def scrape_facts_page(browser):   
+    url = 'https://galaxyfacts-mars.com'
+    browser.visit(url)
+
+    # Parse the resulting html with soup
+    html = browser.html
+    fact_soup = soup(html,'html.parser')
     
-    mars_web['latest_news_date'] = latest_news_date
-    mars_web['latest_news_title'] = latest_news_title
-    mars_web['latest_news_paragraph'] = latest_news_paragraph
+
+    factsLocation = fact_soup.find('div', class_='diagram mt-4')
+    factsTable = factsLocation.find('table')
+
+    facts = ""
+
+    facts += str(factsTable)
+
+    return facts
    
-    browser.quit()
-    return mars_web
-    
-def scrape_marsImage():
-    
-    browser = init_browser()
-    
-    url = 'https://www.jpl.nasa.gov/spaceimages/?search=&category=Mars'
-    browser.visit(url)
-    html=browser.html
-    soup = bs(html, 'html.parser')
-    
-    image = (soup.find_all('div', class_='carousel_items')[0].a.get('data-fancybox-href'))
-    
-    featured = 'https://www.jpl.nasa.gov'+ image
-    
-    mars_web['featured_image'] = featured
-    
-    browser.quit()
-    return mars_web
-    
-def scrape_marsTwitter():
 
-    browser = init_browser()
+# scrape through the hempshare  
+def scrape_hemisphares(browser):
+    url = 'https://marshemispheres.com/'
+    browser.visit(url)
 
-    url = 'https://twitter.com/marswxreport?lang=en'
-    browser.visit(url)
-    html=browser.html
-    soup = bs(html, 'html.parser')
-    
-    mars_weather = (soup.find_all('p', class_='TweetTextSize TweetTextSize--normal js-tweet-text tweet-text')[0].get_text())
-    
-    mars_web['mars_weather'] = mars_weather
-    
-    browser.quit()      
-    return mars_web
-    
-def scrape_marsFacts():
-    browser = init_browser()
-    
-    url = 'https://space-facts.com/mars/'
-    browser.visit(url)
-    html=browser.html
-    soup = bs(html, 'html.parser')
-    tables_df = ((pd.read_html(url))[0]).rename(columns={0: "Attribute", 1: "Value"}).set_index(['Attribute'])
-    html_table = (tables_df.to_html()).replace('\n', '')
-    
-    mars_web['mars_data'] = html_table
-    browser.quit()
-    return mars_web
+    hemisphere_image_urls = []
+
+# Clink the links and retrieve the image urls and titles
+    for i in range(4):
         
-def scrape_marsH1Cerberus():
-
-    browser = init_browser()
-
-    url = 'https://astrogeology.usgs.gov/search/map/Mars/Viking/cerberus_enhanced'
-    browser.visit(url)
-    html=browser.html
-    soup = bs(html, 'html.parser')
-    cerberus_url = (soup.find_all('div', class_='downloads')[0].li.a.get('href'))
-    mars_web['hemisphere_urls'] = hemisphere_image_urls
-    hemisphere_image_urls.append([{"title": "Cerberus Hemisphere", "img_url": cerberus_url}])
-    
-    browser.quit()
-    return mars_web
-    
-def scrape_marsH2Schiaparelli():
- 
-    browser = init_browser()
-    url = 'https://astrogeology.usgs.gov/search/map/Mars/Viking/schiaparelli_enhanced'
-    browser.visit(url)
-    html=browser.html
-    soup = bs(html, 'html.parser')
-    schiaparelli_url = (soup.find_all('div', class_='downloads')[0].li.a.get('href'))
-    hemisphere_image_urls.append([{"title": "Schiaparelli Hemisphere", "img_url": schiaparelli_url}])
-
-    browser.quit()
-    return mars_web
-    
-def scrape_marsH3SyrtisMajor():        
-
-    browser = init_browser()
-    url = 'https://astrogeology.usgs.gov/search/map/Mars/Viking/syrtis_major_enhanced'
-    browser.visit(url)
-    html=browser.html
-    soup = bs(html, 'html.parser')
-    syrtis_major_url = (soup.find_all('div', class_='downloads')[0].li.a.get('href'))
-    hemisphere_image_urls.append([{"title": "Syrtis Major Hemisphere", "img_url": syrtis_major_url}])
-
-    browser.quit()
-    return mars_web
+        hemisphereInfo = {}
         
-def scrape_marsH4VallesMarineris():     
+        browser.find_by_css('a.product-item img')[i].click()
+        
+        sample = browser.links.find_by_text('Sample').first
+        hemisphereInfo["img_url"] = sample['href']
+        
+        # Title
+        hemisphereInfo['title'] = browser.find_by_css('h2.title').text
+        
+        # Append to list
+        hemisphere_image_urls.append(hemisphereInfo)   
+        
+        # Browse back to repeat
+        browser.back()
 
-    browser = init_browser()
-    url = 'https://astrogeology.usgs.gov/search/map/Mars/Viking/valles_marineris_enhanced'
-    browser.visit(url)
-    html=browser.html
-    soup = bs(html, 'html.parser')
-    valles_marineries_url= (soup.find_all('div', class_='downloads')[0].li.a.get('href'))
-    hemisphere_image_urls.append([{"title": "Valles Marineris Hemisphere", "img_url": valles_marineries_url}])
+    return hemisphere_image_urls
+        
 
-    browser.quit()
-    return mars_web
+if __name__ == "__main__":
+        print(scrape_all())    
+
+
