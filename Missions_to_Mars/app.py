@@ -11,7 +11,9 @@ mongo = PyMongo(app)
 
 @app.route("/")
 def index():
-    return "You reached the index"
+    mars_data = mongo.db.marsData.find_one()
+    print(mars_data)
+    return render_template("index_home.html", mars=mars_data)
 
 # Route that will trigger the scrape function    
 @app.route("/scrape")
@@ -25,11 +27,7 @@ def scrape():
 
     marsTable.insert_one(mars_data)
 
-    return mars_data
-
-    
-    # Redirect back to home page
-    return "You reached the scrape route"
+    return redirect("/")
 
 # # Given Already
 if __name__ == "__main__":
