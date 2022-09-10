@@ -22,8 +22,8 @@
             <div class="row" id="mars-news">
                 <div class="col-md-12">
                     <h2>Latest Mars News</h2>
-                    <h4>{{ mars.news_title }}</h4>
-                    <p>{{ mars.news_p }}</p>
+                    <h4>{{ mars.newsTitle }}</h4>
+                    <p>{{ mars.newsParagraph }}</p>
                 </div>
             </div>
         </div>
@@ -34,13 +34,11 @@
             <div class="row padding">
                 <div class="col-lg-8 col-md-8 col-sm-12">
                     <h2>Featured Mars Image</h2>
-                    <img src="{{ mars.featured_img }}" class="img-fluid" style="max-width:100%; max-height: auto;" alt="Mars Featured Image">
+                    <img src="{{ mars.featuredImage }}" class="img-fluid" style="max-width:100%; max-height: auto;" alt="Mars Featured Image">
                 </div>
                 <div class="col-lg-4 col-md-4 col-sm-12">
-                    <div style="max-width: 450px; max-height: 150px; font-size: 15px; margin-bottom: 65px;">
                     <h2>Mars Facts</h2>
                     {{ mars.facts|safe }}
-                    </div>
                 </div>
             </div>
         </div>
@@ -61,14 +59,14 @@
             <div class="row padding">
 
                 {% for hemisphere in mars.hemispheres %}
-                <div class="col-md-3">
-                      <div class="thumbnail">
-                        <img src="{{ hemisphere.img_url | defualt('static/image/error.png', true)}}" alt="...">
-                        <div class="caption">
-                              <h3>{{hemisphere.title}}</h3>
+                    <div class="col-sm-3">
+                        <div class="thumbnail">
+                            <img src="{{ hemisphere.img_url }}" alt="...">
+                            <div class="caption">
+                                <h3>{{hemisphere.title}}</h3>
+                            </div>
                         </div>
-                      </div>
-                </div>
+                    </div>
                {% endfor %}
             </div>
         </div>
