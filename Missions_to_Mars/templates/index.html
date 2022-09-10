@@ -11,8 +11,8 @@
 
     <body style="background-color: rgb(233, 219, 219);">
         <div clas="container">
-            <div class="jumbotron text-center"  style="background-image: url(../images/mission_to_mars.png)" alt="mars_image">
-                <h1>Mission to Mars</h1>
+            <div class="jumbotron text-center" style="background-image: url(https://raw.githubusercontent.com/VedranaGATech/web-scraping-challenge/main/Missions_to_Mars/images/mission_to_mars.png?token=GHSAT0AAAAAABYFXFFES6OMGADNGNBNMBAKYY47H3A)" alt="mars_image">
+                <h1 style ="color: rgb(233, 219, 219);">Mission to Mars</h1>
                 <p><a class="btn btn-primary btn-lg" href="/scrape" role="button">Scrape New Data</a></p>
             </div>
         </div>
@@ -46,28 +46,30 @@
         
         <!--- Mars Hemispheres -->
 
-        <div class="container-fluid padding">
+        <div class="container">
             <div class="row text-center">
-                <div class="col-12">
+                <div class="col-md-12">
                 <h2>Mars Hemispheres</h2>
                 </div>
                 <hr class="light">
             </div>
         </div>
         </br>
-        <div class="container-fluid padding">
-            <div class="row padding">
+        <div class="container">
+            <div class="row" id="mars-news">
+                <div class="col-md-12">
 
                 {% for hemisphere in mars.hemispheres %}
                     <div class="col-sm-3">
                         <div class="thumbnail">
-                            <img src="{{ hemisphere.img_url }}" alt="...">
+                            <img src="{{ hemisphere.img_url }}" class="img-fluid" alt="...">
                             <div class="caption">
                                 <h3>{{hemisphere.title}}</h3>
                             </div>
                         </div>
                     </div>
                {% endfor %}
+                </div>
             </div>
         </div>
     </body>
