@@ -16,7 +16,7 @@ def scrape_all():
         "newsParagraph" : news_paragraph,
         "featuredImage" : scrape_featured_image(browser), 
         "facts" : scrape_facts_page(browser), 
-        "hemisphares" : scrape_hemisphares(browser),
+        "hemispheres" : scrape_hemispheres(browser),
         "lastUpdated" : dt.datetime.now()
     }
 
@@ -89,7 +89,7 @@ def scrape_facts_page(browser):
    
 
 # scrape through the hempshare  
-def scrape_hemisphares(browser):
+def scrape_hemispheres(browser):
     url = 'https://marshemispheres.com/'
     browser.visit(url)
 
