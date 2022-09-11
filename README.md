@@ -1,5 +1,7 @@
 # Module 12: Web Scraping Challenge 
 
+![image1](./Missions_to_Mars/images/mission_to_mars.png)  
+
 # Mission to Mars 
 
 Resources
