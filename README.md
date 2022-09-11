@@ -21,7 +21,7 @@ Resources
 
 # Step 1: Scraping
 
-Initial scraping of the following websites was completed using Jupyter Notebook, BeautifulSoup, Pandas, and Requests/Splinter:
+Initial scraping of the above websites was completed using Jupyter Notebook, BeautifulSoup, Pandas, and Requests/Splinter:
 
     - NASA Mars News Site:
         The latest news title and the paragraph text
@@ -36,7 +36,7 @@ Initial scraping of the following websites was completed using Jupyter Notebook,
         Title and image url of each hemisphere 
 
 ### Work Sample
- ![image1](./Missions_to_Mars/images/scrape.png)       
+ ![image](./Missions_to_Mars/images/pandas.png)    
 
 #  Step 2: MongoDB and Flask Application
 
@@ -47,6 +47,7 @@ Initial scraping of the following websites was completed using Jupyter Notebook,
     Create a template index.html that will take the scraped Mars data  and display it all in the appropriate HTML elements as per the given example 
 
 ### Work Sample
+![image1](./Missions_to_Mars/images/scrape.png)  
 ![image2](./Missions_to_Mars/images/mongo.png)
 
 ### Landing page ('/')
